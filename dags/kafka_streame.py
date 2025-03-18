@@ -1,5 +1,4 @@
 from datetime import datetime
-from ensurepip import bootstrap
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 default_args = {
@@ -36,14 +35,26 @@ def stream_data():
     import json
     from kafka import KafkaProducer
     import time
-    res = get_data()
-    res = format_data(res)
-    # print(json.dumps(res, indent=3))
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'], max_block_ms= 10000)
-    producer.send('users_created', json.dumps(res).encode('utf-8'))
+    import logging
+    producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms= 5000)
+    curr_time = time.time()
+
+    while True:
+        if time.time() > curr_time + 60:
+            break
+        try:
+            res = get_data()
+            data = format_data(res)
+            producer.send('users_created', json.dumps(data).encode('utf-8'))
+
+        except Exception as e:
+            logging.error(f'An error occured {e}')
+
+    producer.close()
+    logging.info("Finish sending user to kafka")
 
 
-with DAG('user_aytomation',
+with DAG('user_automation',
          default_args=default_args,
          schedule_interval='@daily',
          catchup=False
@@ -53,4 +64,4 @@ with DAG('user_aytomation',
         python_callable= stream_data
     )
 
-stream_data()
+# stream_data()
