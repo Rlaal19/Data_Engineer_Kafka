@@ -11,6 +11,7 @@ services:
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
     networks:
       - kafka-network
+
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-2
@@ -22,6 +23,7 @@ services:
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
     networks:
       - kafka-network
+
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper-3
@@ -33,11 +35,13 @@ services:
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
     networks:
       - kafka-network
+
   kafka1:
     image: confluentinc/cp-kafka:latest
     container_name: kafka1
     ports:
       - "9092:9092"
+      - "29092:29092"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -45,16 +49,21 @@ services:
     environment:
       KAFKA_BROKER_ID: 0
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.1:9092,PLAINTEXT_DOCKER://kafka1:29092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_DOCKER://0.0.0.0:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
     networks:
       - kafka-network
+
   kafka2:
     image: confluentinc/cp-kafka:latest
     container_name: kafka2
     ports:
-      - "9093:9092"
+      - "9093:9093" #port เชื่อมต่อ Kafka จาก host
+      - "29093:29093" #port ที่รันบน container อื่นๆ เพื่อให้คุยกันใน docker ได้
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -62,16 +71,24 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092
+      # PLAINTEXT://172.17.0.1:9093 use connect to host vm , PLAINTEXT_DOCKER://kafka2:29093 use connect in container
+      # 172.17.0.1 IP ของ Docker Host ใช้คุยกันระหว่าง Container กับ Host Machine
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.1:9093,PLAINTEXT_DOCKER://kafka2:29093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,PLAINTEXT_DOCKER://0.0.0.0:29093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
+      # บอก Kafka ให้ใช้ PLAINTEXT_DOCKER สำหรับ การสื่อสารระหว่าง broker
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
     networks:
       - kafka-network
+
   kafka3:
     image: confluentinc/cp-kafka:latest
     container_name: kafka3
     ports:
-      - "9094:9092"
+      - "9094:9094"
+      - "29094:29094"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -79,10 +96,11 @@ services:
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.1:9094,PLAINTEXT_DOCKER://kafka3:29094
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,PLAINTEXT_DOCKER://0.0.0.0:29094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-    networks:
-      - kafka-network
 networks:
-  kafka-network:
+  - kafka-network
