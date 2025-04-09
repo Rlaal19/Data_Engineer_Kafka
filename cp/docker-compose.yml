@@ -49,7 +49,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 0
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.1:9092,PLAINTEXT_DOCKER://kafka1:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://138.2.71.167:9092,PLAINTEXT_DOCKER://kafka1:29092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_DOCKER://0.0.0.0:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
@@ -59,8 +59,8 @@ services:
     networks:
       - kafka-network
     volumes:
-      - /root/kafka/log/kafka-data/kafka1:/var/lib/kafka/data
-      - /root/kafka/log/kafka-logs/kafka1:/var/log/kafka
+      - /opc/kafka/log/kafka-data/kafka1:/var/lib/kafka/data
+      - /opc/kafka/log/kafka-logs/kafka1:/var/log/kafka
 
   kafka2:
     image: confluentinc/cp-kafka:latest
@@ -75,7 +75,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.1:9093,PLAINTEXT_DOCKER://kafka2:29093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://138.2.71.167:9093,PLAINTEXT_DOCKER://kafka2:29093
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,PLAINTEXT_DOCKER://0.0.0.0:29093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
@@ -85,8 +85,8 @@ services:
     networks:
       - kafka-network
     volumes:
-      - /root/kafka/log/kafka-data/kafka2:/var/lib/kafka/data
-      - /root/kafka/log/kafka-logs/kafka2:/var/log/kafka
+      - /opc/kafka/log/kafka-data/kafka2:/var/lib/kafka/data
+      - /opc/kafka/log/kafka-logs/kafka2:/var/log/kafka
 
   kafka3:
     image: confluentinc/cp-kafka:latest
@@ -101,7 +101,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.1:9094,PLAINTEXT_DOCKER://kafka3:29094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://138.2.71.167:9094,PLAINTEXT_DOCKER://kafka3:29094
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,PLAINTEXT_DOCKER://0.0.0.0:29094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_DOCKER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_DOCKER
@@ -111,8 +111,8 @@ services:
     networks:
       - kafka-network
     volumes:
-      - /root/kafka/log/kafka-data/kafka3:/var/lib/kafka/data
-      - /root/kafka/log/kafka-logs/kafka3:/var/log/kafka
+      - /opc/kafka/log/kafka-data/kafka3:/var/lib/kafka/data
+      - /opc/kafka/log/kafka-logs/kafka3:/var/log/kafka
 
 networks:
   kafka-network:
@@ -131,3 +131,5 @@ networks:
     #   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
     # networks:
     #   - kafka-network
+
+    # แก้ PLAINTEXT:// ให้เป็น ip เครื่อง
